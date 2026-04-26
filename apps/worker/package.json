@@ -1,0 +1,20 @@
+{
+  "name": "@michito/worker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "predev": "pnpm --filter @michito/shared build",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -b",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@michito/shared": "workspace:*",
+    "bullmq": "^5.58.0",
+    "dotenv": "^17.2.0",
+    "ioredis": "^5.7.0"
+  }
+}

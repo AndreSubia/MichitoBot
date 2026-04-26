@@ -87,6 +87,18 @@ web_modules/
 .next
 out
 
+# Turborepo
+.turbo
+
+# Prisma generated client (Prisma v7 custom output)
+packages/db/src/generated/
+
+# Docker local volumes (if created by compose in this repo)
+**/docker-compose.override.yml
+
+#Notes
+REQUERIMENTS.md
+
 # Nuxt.js build / generate output
 .nuxt
 dist

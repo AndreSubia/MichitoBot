@@ -51,3 +51,141 @@ Michito Bot is built to support:
 - 📊 Dashboard for configuration and visibility
 - 🧩 Modular monorepo structure
 - 🌍 Multi-server scalability
+
+## 🚀 Local Setup
+
+### Requirements
+
+- Node.js 24 (recommended via nvm)
+- pnpm (via Corepack)
+- PostgreSQL 17+
+- pgvector extension available for your PostgreSQL version
+- Optional: Docker (only if you want to use `pnpm infra:up`)
+
+### Node + pnpm
+
+```bash
+nvm install 24
+nvm use 24
+
+corepack enable
+corepack prepare pnpm@9.15.5 --activate
+
+pnpm install
+```
+
+### Database (PostgreSQL + pgvector)
+
+If you use Homebrew PostgreSQL, make sure `psql` is on your PATH:
+
+```bash
+export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+psql --version
+```
+
+Create your development databases and enable pgvector in both the main DB and the shadow DB:
+
+```bash
+psql -d postgres -c "CREATE DATABASE michito;"
+psql -d postgres -c "CREATE DATABASE michito_shadow;"
+
+psql -d michito -c "CREATE EXTENSION IF NOT EXISTS vector;"
+psql -d michito_shadow -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+### Environment variables
+
+Copy the example file and edit as needed:
+
+```bash
+cp .env.example .env
+```
+
+Important variables:
+
+- `DATABASE_URL`: main development database
+- `SHADOW_DATABASE_URL`: shadow database used by `prisma migrate dev`
+
+Example:
+
+```env
+DATABASE_URL=postgresql://<user>@localhost:5432/michito?schema=public
+SHADOW_DATABASE_URL=postgresql://<user>@localhost:5432/michito_shadow?schema=public
+```
+
+Note: the `?schema=public` parameter is used by Prisma. If you test connectivity with `psql`, omit the `?schema=...` query parameter.
+
+### Prisma (migrations + client)
+
+```bash
+pnpm --filter @michito/db exec prisma migrate reset --force
+pnpm --filter @michito/db exec prisma migrate dev --name init
+pnpm --filter @michito/db db:generate
+```
+
+### Dev commands
+
+```bash
+pnpm dev
+```
+
+## 🧳 Replicating On Another Laptop (Easiest Way)
+
+Recommendation: run infrastructure (PostgreSQL + pgvector + Redis) via Docker, and run the bot with local Node.
+
+### Requirements
+
+- Node.js 24 (via nvm)
+- pnpm (via Corepack)
+- Docker Desktop
+
+### Steps
+
+```bash
+nvm install 24
+nvm use 24
+
+corepack enable
+corepack prepare pnpm@9.15.5 --activate
+
+pnpm install
+cp .env.example .env
+```
+
+Fill in at least these variables in `.env`:
+
+- `DISCORD_BOT_TOKEN`
+- `DISCORD_CLIENT_ID`
+- `DISCORD_DEV_GUILD_ID` (your test server Guild ID)
+
+Start infrastructure with Docker:
+
+```bash
+pnpm infra:up
+```
+
+Initialize Prisma:
+
+```bash
+pnpm --filter @michito/db exec prisma migrate dev --name init
+pnpm --filter @michito/db db:generate
+```
+
+Start the bot:
+
+```bash
+pnpm --filter @michito/bot dev
+```
+
+### Inviting The Bot To A Server (Dev)
+
+In the Discord Developer Portal:
+
+- OAuth2 → URL Generator
+- Scopes: `bot` + `applications.commands`
+- Permissions: only what you need for what you want to test
+
+### Commands (Guild vs Global)
+
+- Dev (guild commands, instant updates): `pnpm --filter @michito/bot dev` + `DISCORD_DEV_GUILD_ID` in `.env`.
+- Global (available in all servers): `NODE_ENV=production pnpm --filter @michito/bot dev` or `DISCORD_COMMANDS_SCOPE=global pnpm --filter @michito/bot dev`.

@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum KnowledgeKind {
+  FACT
+  QA
+  STYLE
+}
+
+enum TrainingSource {
+  TEACH
+  APPROVED_REPLY
+  ADMIN_UPLOAD
+}
+
+enum ModerationActionKind {
+  GRANT_ROLE
+  REVOKE_ROLE
+  BAN
+  KICK
+  TIMEOUT
+  NOTE
+  FLAG
+}
+
+model GuildSettings {
+  guildId     String   @id
+  personality String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("guild_settings")
+}
+
+model GuildAllowedChannel {
+  id        String   @id @default(cuid())
+  guildId   String
+  channelId String
+  createdAt DateTime @default(now())
+
+  @@index([guildId])
+  @@unique([guildId, channelId])
+  @@map("guild_allowed_channels")
+}
+
+model GuildRolePolicy {
+  id        String   @id @default(cuid())
+  guildId   String
+  roleId    String
+  canGrant  Boolean  @default(false)
+  canRevoke Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([guildId])
+  @@unique([guildId, roleId])
+  @@map("guild_role_policies")
+}
+
+model KnowledgeEntry {
+  id                  String        @id @default(cuid())
+  guildId             String
+  kind                KnowledgeKind
+  title               String?
+  content             String
+  approvedForTraining Boolean       @default(false)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  chunks              KnowledgeChunk[]
+
+  @@index([guildId])
+  @@map("knowledge_entries")
+}
+
+model KnowledgeChunk {
+  id        String  @id @default(cuid())
+  guildId   String
+  entryId   String
+  content   String
+  embedding Unsupported("vector")?
+  createdAt DateTime @default(now())
+
+  entry KnowledgeEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([entryId])
+  @@map("knowledge_chunks")
+}
+
+model InteractionLog {
+  id          String   @id @default(cuid())
+  guildId     String
+  userId      String
+  commandName String
+  input       Json
+  output      Json?
+  createdAt   DateTime @default(now())
+
+  @@index([guildId])
+  @@index([createdAt])
+  @@map("interaction_logs")
+}
+
+model FeedbackEvent {
+  id        String   @id @default(cuid())
+  guildId   String
+  userId    String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@index([guildId])
+  @@map("feedback_events")
+}
+
+model TrainingExample {
+  id        String         @id @default(cuid())
+  guildId   String
+  source    TrainingSource
+  messages  Json
+  approved  Boolean        @default(false)
+  createdAt DateTime       @default(now())
+
+  @@index([guildId])
+  @@map("training_examples")
+}
+
+model ModerationAction {
+  id           String               @id @default(cuid())
+  guildId      String
+  kind         ModerationActionKind
+  actorUserId  String
+  targetUserId String?
+  reason       String?
+  metadata     Json?
+  createdAt    DateTime             @default(now())
+
+  @@index([guildId])
+  @@map("moderation_actions")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  guildId     String
+  actorUserId String
+  action      String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([guildId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model ModelConfig {
+  id             String   @id @default(cuid())
+  guildId        String
+  llmModel       String?
+  embeddingModel String?
+  temperature    Float?
+  updatedAt      DateTime @updatedAt
+
+  @@unique([guildId])
+  @@map("model_configs")
+}
