@@ -30,27 +30,25 @@
 
 ## 🐾 About Michito Bot
 
-Michito Bot is an open-source Discord bot built with TypeScript for communities that want a playful assistant with a cat-like personality, a modern dashboard, and a solid technical foundation.
+Michito Bot is an open-source Discord bot built with TypeScript for communities that want a playful assistant with a cat-like personality, lightweight per-server “training” (memory), and a solid foundation for future fine-tuning (LoRA).
 
 Michito Bot is built to support:
 
-- English slash commands
-- per-server configuration and isolated memory
-- AI integration through local models or external APIs
-- role management and moderation tools
-- a dashboard for settings, logs, and knowledge management
-- clean architecture and open-source collaboration
+- Slash commands for explicit actions (chat, memory, tooling)
+- Ambient chat replies (keyword triggers) for a more “alive” assistant
+- Per-server isolated memory via `/train` (JSONL on disk), plus optional per-user rules
+- AI integration via local Ollama models (or other providers in the future)
+- Fine-tune/LoRA-ready data collection and export (conversation JSONL)
+- Modular monorepo architecture designed for growth
 
 ## ✨ Features
 
-- 🐱 Cat-inspired personality and customizable behavior
-- ⚡ Commands-first Discord experience
-- 🧠 AI-ready architecture with pluggable model providers
-- 🗂️ Per-server settings, memory, and knowledge
-- 🛡️ Safe role and moderation actions
-- 📊 Dashboard for configuration and visibility
-- 🧩 Modular monorepo structure
-- 🌍 Multi-server scalability
+- 🐱 Cat-inspired personality that can be shaped per server with `/train`
+- ⚡ Slash commands for “intentional” actions, plus trigger-based conversational replies
+- 🧠 Local Ollama model support (bring your own Modelfile + model tag)
+- 🗂️ Per-server isolated memory and optional per-user personalization
+- 🧪 Fine-tuning pipeline readiness (collect examples, export a chat dataset)
+- 🧩 Modular monorepo structure and multi-server scalability
 
 ## 🚀 Local Setup
 
