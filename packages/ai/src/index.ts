@@ -79,23 +79,37 @@ export class OllamaLlmProvider implements LlmProvider {
         input.temperature === undefined ? undefined : { temperature: input.temperature }
     };
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body)
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 segundos de timeout
 
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(
-        `Ollama error (${res.status}) (baseUrl=${this.baseUrl}, model=${model}): ${text}`
-      );
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(
+          `Ollama error (${res.status}) (baseUrl=${this.baseUrl}, model=${model}): ${text}`
+        );
+      }
+
+      const json = (await res.json()) as OllamaChatResponse;
+      const content = json.message?.content ?? "";
+
+      return { content };
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new Error(`Ollama request timed out after 60 seconds (model=${model})`);
+      }
+      throw error;
     }
-
-    const json = (await res.json()) as OllamaChatResponse;
-    const content = json.message?.content ?? "";
-
-    return { content };
   }
 }
 
