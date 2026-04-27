@@ -53,13 +53,29 @@ export default function DemoPage() {
   useEffect(() => {
     setMounted(true);
 
-    const timeline = gsap.timeline({ delay: 0.1 });
+    // Sincronizar theme-color inicial
+    if (resolvedTheme) {
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute("content", resolvedTheme === "dark" ? "#09090b" : "#ffffff");
+      }
+    }
+
+    const timeline = gsap.timeline({ delay: 0.05 }); // Retraso inicial casi nulo
 
     // 1. Aparece primero el header móvil o el contenido principal
     if (mobileHeaderRef.current) {
       timeline.fromTo(mobileHeaderRef.current,
-        { y: -20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }
+        { y: -10, opacity: 0 },
+        { 
+          y: 0, 
+          opacity: 1, 
+          duration: 0.4, // Más rápido
+          ease: "power2.out",
+          onComplete: () => {
+            mobileHeaderRef.current?.classList.remove("gsap-reveal-fade-init");
+          }
+        }
       );
     }
 
@@ -68,32 +84,31 @@ export default function DemoPage() {
       const sidebar = sidebarRef.current;
       const children = Array.from(sidebar.children);
       
-      // Aseguramos que empiecen invisibles y movidos (por si acaso el CSS no carga a tiempo)
-      gsap.set(children, { opacity: 0, x: -20 });
+      gsap.set(children, { opacity: 0, x: -15 });
 
-      // 2.1 Identidad (Avatar y Título) - SIEMPRE PRIMERO
+      // 2.1 Identidad (Avatar y Título)
       timeline.to(children[0], { 
         x: 0, 
         opacity: 1, 
-        duration: 0.5, 
+        duration: 0.35, 
         ease: "power2.out" 
-      }, "-=0.3");
+      }, "-=0.25");
 
       // 2.2 Banner de Discord
       timeline.to(children[1], { 
         x: 0, 
         opacity: 1, 
-        duration: 0.5, 
+        duration: 0.35, 
         ease: "power2.out" 
-      }, "-=0.3");
+      }, "-=0.25");
 
-      // 2.3 El resto (Estado y Reglas) en cascada
+      // 2.3 El resto (Estado y Reglas) en cascada rápida
       const remaining = children.slice(2);
       timeline.to(remaining, {
         x: 0,
         opacity: 1,
-        duration: 0.6,
-        stagger: 0.1,
+        duration: 0.4,
+        stagger: 0.05, // Cascada mucho más rápida
         ease: "power2.out",
         onComplete: () => {
           sidebar.classList.remove("gsap-reveal-stagger-init");
@@ -102,12 +117,20 @@ export default function DemoPage() {
       }, "-=0.2");
     }
 
-    // 3. Aparece el área de chat
+    // 3. Aparece el área de chat (casi instantáneo)
     if (chatContainerRef.current) {
       timeline.fromTo(chatContainerRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, // Más rápido y directo
-        "-=0.8" // Empieza mucho antes para que no se sienta lento
+        { opacity: 0, y: 5 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 0.4, 
+          ease: "power2.out",
+          onComplete: () => {
+            chatContainerRef.current?.classList.remove("gsap-reveal-fade-init");
+          }
+        },
+        "-=0.6" // Gran solapamiento para que aparezca rápido
       );
     }
 
@@ -130,6 +153,12 @@ export default function DemoPage() {
 
     const isDark = resolvedTheme === "dark";
     const nextTheme = isDark ? "light" : "dark";
+
+    // Actualizar meta tag theme-color para móviles
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute("content", nextTheme === "dark" ? "#09090b" : "#ffffff");
+    }
 
     const suns = [sunRefDesktop.current, sunRefMobile.current].filter(Boolean);
     const moons = [moonRefDesktop.current, moonRefMobile.current].filter(Boolean);
@@ -198,7 +227,7 @@ export default function DemoPage() {
       />
 
       <div ref={mainContentRef} className="flex-1 flex flex-col relative overflow-hidden h-full bg-background theme-transition">
-        <div ref={mobileHeaderRef}>
+        <div ref={mobileHeaderRef} className="gsap-reveal-fade-init">
           <MobileHeader 
             avatarRefMobile={avatarRefMobile}
             toggleTheme={toggleTheme}

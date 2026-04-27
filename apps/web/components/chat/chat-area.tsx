@@ -31,7 +31,7 @@ export function ChatArea({
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth custom-scrollbar theme-transition"
       >
-        <div ref={chatContainerRef} className="space-y-6 theme-transition">
+        <div ref={chatContainerRef} className="space-y-6 theme-transition gsap-reveal-fade-init">
           {messages.map((msg, i) => (
             <div 
               key={i}
