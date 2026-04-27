@@ -3,6 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Registrar el plugin de GSAP
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 // Hooks
 import { useChat } from "../hooks/use-chat";
@@ -45,9 +51,8 @@ export default function DemoPage() {
   const sunRefMobile = useRef<HTMLDivElement>(null);
   const moonRefMobile = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const avatarRef = useRef<HTMLDivElement>(null);
   const avatarRefMobile = useRef<HTMLDivElement>(null);
-  const mobileHeaderRef = useRef<HTMLDivElement>(null);
+  const mobileHeaderRef = useRef<HTMLElement>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,7 +66,18 @@ export default function DemoPage() {
       }
     }
 
-    const timeline = gsap.timeline({ delay: 0.05 }); // Retraso inicial casi nulo
+    const timeline = gsap.timeline({ 
+      delay: 0.05,
+      onComplete: () => {
+        // Fallback de seguridad: eliminar todas las clases de inicialización
+        document.querySelectorAll(".gsap-reveal-fade-init").forEach(el => {
+          el.classList.remove("gsap-reveal-fade-init");
+        });
+        document.querySelectorAll(".gsap-reveal-stagger-init").forEach(el => {
+          el.classList.remove("gsap-reveal-stagger-init");
+        });
+      }
+    });
 
     // 1. Aparece primero el header móvil o el contenido principal
     if (mobileHeaderRef.current) {
@@ -86,7 +102,7 @@ export default function DemoPage() {
       
       gsap.set(children, { opacity: 0, x: -15 });
 
-      // 2.1 Identidad (Avatar y Título)
+      // 2.1 Botón de invitación
       timeline.to(children[0], { 
         x: 0, 
         opacity: 1, 
@@ -94,16 +110,8 @@ export default function DemoPage() {
         ease: "power2.out" 
       }, "-=0.25");
 
-      // 2.2 Banner de Discord
-      timeline.to(children[1], { 
-        x: 0, 
-        opacity: 1, 
-        duration: 0.35, 
-        ease: "power2.out" 
-      }, "-=0.25");
-
-      // 2.3 El resto (Estado y Reglas) en cascada rápida
-      const remaining = children.slice(2);
+      // 2.2 El resto (Estado y Reglas) en cascada rápida
+      const remaining = children.slice(1);
       timeline.to(remaining, {
         x: 0,
         opacity: 1,
@@ -135,9 +143,8 @@ export default function DemoPage() {
     }
 
     // Animación de respiración del avatar
-    const avatars = [avatarRef.current, avatarRefMobile.current].filter(Boolean);
-    if (avatars.length > 0) {
-      gsap.to(avatars, {
+    if (avatarRefMobile.current) {
+      gsap.to(avatarRefMobile.current, {
         y: -4,
         duration: 2,
         repeat: -1,
@@ -212,34 +219,27 @@ export default function DemoPage() {
     <div className="fixed inset-0 flex bg-background text-foreground font-sans overflow-hidden overscroll-none">
       <Sidebar 
         sidebarRef={sidebarRef}
-        avatarRef={avatarRef}
         rules={rules}
         ruleInput={ruleInput}
         setRuleInput={setRuleInput}
         handleCreateRule={handleCreateRule}
         isCreatingRule={isCreatingRule}
+        setShowInviteModal={setShowInviteModal}
+      />
+
+      <MobileHeader 
+        headerRef={mobileHeaderRef}
+        avatarRefMobile={avatarRefMobile}
         toggleTheme={toggleTheme}
-        sunRef={sunRefDesktop}
-        moonRef={moonRefDesktop}
+        sunRef={sunRefMobile}
+        moonRef={moonRefMobile}
         resolvedTheme={resolvedTheme}
         mounted={mounted}
+        setShowRulesModal={setShowRulesModal}
         setShowInviteModal={setShowInviteModal}
       />
 
       <div ref={mainContentRef} className="flex-1 flex flex-col relative overflow-hidden h-full bg-background theme-transition">
-        <div ref={mobileHeaderRef} className="gsap-reveal-fade-init">
-          <MobileHeader 
-            avatarRefMobile={avatarRefMobile}
-            toggleTheme={toggleTheme}
-            sunRef={sunRefMobile}
-            moonRef={moonRefMobile}
-            resolvedTheme={resolvedTheme}
-            mounted={mounted}
-            setShowRulesModal={setShowRulesModal}
-            setShowInviteModal={setShowInviteModal}
-          />
-        </div>
-
         <ChatArea 
           messages={messages}
           input={input}

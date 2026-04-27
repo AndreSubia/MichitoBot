@@ -29,7 +29,7 @@ export function ChatArea({
     <div className="flex-1 flex flex-col relative overflow-hidden h-full bg-background theme-transition">
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth custom-scrollbar theme-transition"
+        className="flex-1 overflow-y-auto p-4 md:p-8 pt-[calc(6rem+env(safe-area-inset-top))] md:pt-28 pb-32 md:pb-40 space-y-6 scroll-smooth custom-scrollbar theme-transition"
       >
         <div ref={chatContainerRef} className="space-y-6 theme-transition gsap-reveal-fade-init">
           {messages.map((msg, i) => (
@@ -77,7 +77,7 @@ export function ChatArea({
         )}
       </div>
 
-      <div className="shrink-0 p-4 md:p-8 border-t border-border bg-background/95 backdrop-blur-md pb-[calc(1rem+env(safe-area-inset-bottom))] md:pb-8 z-20 theme-transition">
+      <div className="absolute bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:p-8 border-t border-border/50 glass-footer z-20 theme-transition">
         <form onSubmit={handleSend} className="max-w-3xl mx-auto relative theme-transition">
           <input 
             type="text"

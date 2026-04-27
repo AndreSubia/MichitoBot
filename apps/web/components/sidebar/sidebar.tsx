@@ -1,72 +1,30 @@
 "use client";
 
-import Image from "next/image";
 import { Settings, Sparkles, Plus, ExternalLink } from "lucide-react";
-import { ThemeToggle } from "../ui/theme-toggle";
 import { Rule } from "../../types";
 import { RefObject } from "react";
 
 interface SidebarProps {
   sidebarRef: RefObject<HTMLDivElement | null>;
-  avatarRef: RefObject<HTMLDivElement | null>;
   rules: Rule[];
   ruleInput: string;
   setRuleInput: (val: string) => void;
   handleCreateRule: (e?: React.FormEvent) => void;
   isCreatingRule: boolean;
-  toggleTheme: () => void;
-  sunRef: RefObject<HTMLDivElement | null>;
-  moonRef: RefObject<HTMLDivElement | null>;
-  resolvedTheme?: string;
-  mounted: boolean;
   setShowInviteModal: (val: boolean) => void;
 }
 
 export function Sidebar({
   sidebarRef,
-  avatarRef,
   rules,
   ruleInput,
   setRuleInput,
   handleCreateRule,
   isCreatingRule,
-  toggleTheme,
-  sunRef,
-  moonRef,
-  resolvedTheme,
-  mounted,
   setShowInviteModal
 }: SidebarProps) {
   return (
-    <div ref={sidebarRef} className="w-80 border-r border-border p-6 flex flex-col gap-6 hidden md:flex overflow-y-auto bg-card gsap-reveal-stagger-init theme-transition">
-      <div className="flex items-center justify-between theme-transition">
-        <div className="flex items-center gap-3">
-          <div ref={avatarRef} className="relative w-12 h-12 rounded-xl overflow-hidden bg-muted border border-border theme-transition">
-            <Image 
-              src="/avatar.png" 
-              alt="Michito Avatar" 
-              fill 
-              className="object-cover"
-            />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold tracking-tight theme-transition">Michito Bot</h1>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">En línea</span>
-            </div>
-          </div>
-        </div>
-        
-        <ThemeToggle 
-          toggleTheme={toggleTheme}
-          sunRef={sunRef}
-          moonRef={moonRef}
-          resolvedTheme={resolvedTheme}
-          mounted={mounted}
-        />
-      </div>
-
+    <div ref={sidebarRef} className="w-80 border-r border-border p-6 flex flex-col gap-6 hidden md:flex overflow-y-auto bg-card gsap-reveal-stagger-init theme-transition pt-24">
       <button 
         onClick={() => setShowInviteModal(true)}
         className="flex items-center justify-between p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl hover:bg-orange-500/20 theme-transition group text-left w-full"
