@@ -48,7 +48,7 @@ export function Modals({
               </div>
               <h2 className="text-xl font-bold tracking-tight text-foreground">¡Muy pronto! 🐾</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Estamos terminando de preparar las maletas de Michito. Muy pronto podrás invitarlo a tu servidor de Discord para que llene tus canales de alegría y ronroneos.
+                Estamos ultimando detalles para el lanzamiento de Michito. Muy pronto podrás invitarlo a tu servidor de Discord.
               </p>
               <button 
                 onClick={() => setShowInviteModal(false)}

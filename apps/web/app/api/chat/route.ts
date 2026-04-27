@@ -49,7 +49,8 @@ export async function POST(req: Request) {
       }
     }
 
-    console.log(`Chat request to model: ${OLLAMA_MODEL} with ${messages.length} messages`);
+    const timestamp = new Date().toLocaleTimeString();
+    console.log(`[${timestamp}] Chat request to model: ${OLLAMA_MODEL} with ${messages.length} messages`);
 
     const response = await llm.chat({
       messages: [

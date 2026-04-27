@@ -127,9 +127,9 @@ pnpm --filter @michito/db db:generate
 pnpm dev
 ```
 
-## 🧳 Replicating On Another Laptop (Easiest Way)
+## 🚀 Local Development Setup (Recommended)
 
-Recommendation: run infrastructure (PostgreSQL + pgvector + Redis) via Docker, and run the bot with local Node.
+Infrastructure (PostgreSQL + pgvector + Redis) is managed via Docker for a consistent environment across any machine.
 
 ### Requirements
 
