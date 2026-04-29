@@ -24,7 +24,7 @@ export function Sidebar({
   setShowInviteModal
 }: SidebarProps) {
   return (
-    <div ref={sidebarRef} className="w-80 border-r border-border p-6 flex flex-col gap-6 hidden md:flex overflow-y-auto bg-card gsap-reveal-stagger-init theme-transition pt-24">
+    <div ref={sidebarRef} className="w-80 h-full border-r border-border p-6 flex flex-col gap-6 overflow-y-auto bg-card gsap-reveal-stagger-init theme-transition pt-24">
       <button 
         onClick={() => setShowInviteModal(true)}
         className="flex items-center justify-between p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl hover:bg-orange-500/20 theme-transition group text-left w-full"

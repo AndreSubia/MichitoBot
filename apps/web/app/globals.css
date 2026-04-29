@@ -84,15 +84,23 @@ body {
   }
 
   .glass-header {
-     background-color: hsla(var(--background) / 0.6);
-     backdrop-filter: blur(12px);
-     -webkit-backdrop-filter: blur(12px);
+     background-color: hsl(var(--background) / var(--glass-alpha, 0.6));
+     backdrop-filter: blur(var(--glass-blur, 12px));
+     -webkit-backdrop-filter: blur(var(--glass-blur, 12px));
    }
 
    .glass-footer {
-     background-color: hsla(var(--background) / 0.6);
-     backdrop-filter: blur(12px);
-     -webkit-backdrop-filter: blur(12px);
+     background-color: hsl(var(--background) / var(--glass-alpha, 0.6));
+     backdrop-filter: blur(var(--glass-blur, 12px));
+     -webkit-backdrop-filter: blur(var(--glass-blur, 12px));
+   }
+
+   .vt-header {
+     view-transition-name: app-header;
+   }
+
+   .vt-footer {
+     view-transition-name: app-footer;
    }
 
 /* Evitar transiciones bruscas en el montaje inicial */
@@ -131,6 +139,28 @@ body {
   background-color: hsl(var(--muted-foreground) / 0.3);
 }
 
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+@media (min-width: 768px) {
+  .sticky-desktop {
+    position: sticky;
+    top: 6rem;
+  }
+}
+
+@media (min-width: 768px) and (max-height: 520px) {
+  .sticky-desktop {
+    position: static;
+    top: auto;
+  }
+}
+
 /* Clases para evitar el flash de contenido antes de las animaciones GSAP */
 .gsap-reveal-stagger-init > * {
   opacity: 0;
@@ -139,4 +169,16 @@ body {
 
 .gsap-reveal-fade-init {
   opacity: 0;
+}
+
+.hero-word-init {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-word-init {
+    opacity: 1;
+    transform: none;
+  }
 }

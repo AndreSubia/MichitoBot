@@ -32,6 +32,10 @@
   "include": [
     "app/**/*.ts",
     "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "hooks/**/*.ts",
+    "types/**/*.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts"
   ],

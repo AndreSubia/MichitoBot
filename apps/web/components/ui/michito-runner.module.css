@@ -1,0 +1,190 @@
+.floatingYarn {
+  pointer-events: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 56;
+}
+
+.floatingCat {
+  pointer-events: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 55;
+}
+
+.michito {
+  position: relative;
+}
+
+.michito-wrapper {
+  perspective: 800px;
+  --run-speed: 0.6s;
+  --origami-fill: hsl(var(--background));
+  --origami-crease: hsl(var(--foreground) / 0.08);
+  --origami-stroke: hsl(var(--foreground) / 0.38);
+  --origami-shadow: rgba(0, 0, 0, 0.22);
+}
+
+.michito__torso {
+  position: relative;
+  width: 124px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--origami-fill) 0%, var(--origami-fill) 58%, var(--origami-crease) 59%, var(--origami-fill) 100%);
+  border: 1px solid var(--origami-stroke);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+  filter: drop-shadow(0 3px 10px var(--origami-shadow));
+  clip-path: polygon(6% 58%, 18% 26%, 44% 12%, 76% 18%, 94% 44%, 78% 76%, 46% 86%, 18% 78%);
+}
+
+.michito__head {
+  position: absolute;
+  left: 12px;
+  top: -22px;
+  width: 34px;
+  height: 30px;
+  background: linear-gradient(145deg, var(--origami-fill) 0%, var(--origami-fill) 62%, var(--origami-crease) 63%, var(--origami-fill) 100%);
+  border: 1px solid var(--origami-stroke);
+  filter: drop-shadow(0 2px 8px var(--origami-shadow));
+  clip-path: polygon(50% 4%, 96% 46%, 70% 96%, 30% 96%, 4% 46%);
+}
+
+.michito__head::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 10px;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  border-top: 1px solid hsl(var(--foreground) / 0.22);
+  border-left: 1px solid hsl(var(--foreground) / 0.16);
+  transform-origin: 50% 50%;
+  rotate: 12deg;
+}
+
+.michito__ear {
+  position: absolute;
+  top: -10px;
+  width: 14px;
+  height: 14px;
+  background: var(--origami-fill);
+  border: 1px solid var(--origami-stroke);
+  filter: drop-shadow(0 2px 6px var(--origami-shadow));
+  clip-path: polygon(50% 6%, 96% 96%, 4% 96%);
+}
+
+.michito__ear--left {
+  left: -2px;
+  transform: rotate(-18deg);
+}
+
+.michito__ear--right {
+  right: -2px;
+  transform: rotate(18deg);
+}
+
+.michito__leg {
+  position: absolute;
+  width: 3px;
+  height: 22px;
+  background: hsl(var(--foreground) / 0.55);
+  top: 38px;
+  transform-origin: 50% 0%;
+}
+
+.michito__leg--front-left {
+  left: 26px;
+}
+
+.michito__leg--front-right {
+  left: 40px;
+}
+
+.michito__leg--back-left {
+  right: 42px;
+}
+
+.michito__leg--back-right {
+  right: 26px;
+}
+
+.michito__tail {
+  position: absolute;
+  right: -20px;
+  top: 20px;
+  width: 30px;
+  height: 12px;
+  background: linear-gradient(160deg, var(--origami-fill) 0%, var(--origami-fill) 58%, var(--origami-crease) 59%, var(--origami-fill) 100%);
+  border: 1px solid var(--origami-stroke);
+  filter: drop-shadow(0 2px 8px var(--origami-shadow));
+  transform-origin: 0% 50%;
+  clip-path: polygon(0% 50%, 100% 10%, 86% 90%);
+}
+
+.michito-yarn {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(244, 63, 94, 0.92);
+  box-shadow: 0 0 0 1px hsl(var(--border)), 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.michito-yarn::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+.michito-yarn::after {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  width: 18px;
+  height: 2px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: rgba(244, 63, 94, 0.55);
+}
+
+@keyframes body-bounce {
+  0% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  100% {
+    transform: translateY(10px) rotate(2deg);
+  }
+}
+
+@keyframes run-leg-forward {
+  0% {
+    transform: rotate(-40deg);
+  }
+  100% {
+    transform: rotate(40deg);
+  }
+}
+
+@keyframes run-leg-backward {
+  0% {
+    transform: rotate(40deg);
+  }
+  100% {
+    transform: rotate(-40deg);
+  }
+}
+
+@keyframes tail-wag {
+  0% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(-20deg);
+  }
+}

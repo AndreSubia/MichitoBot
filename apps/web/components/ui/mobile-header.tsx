@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { Sparkles, Plus } from "lucide-react";
 import { ThemeToggle } from "../ui/theme-toggle";
 import { RefObject } from "react";
 
@@ -13,8 +12,6 @@ interface MobileHeaderProps {
   moonRef: RefObject<HTMLDivElement | null>;
   resolvedTheme?: string;
   mounted: boolean;
-  setShowRulesModal: (val: boolean) => void;
-  setShowInviteModal: (val: boolean) => void;
 }
 
 export function MobileHeader({
@@ -24,14 +21,12 @@ export function MobileHeader({
   sunRef,
   moonRef,
   resolvedTheme,
-  mounted,
-  setShowRulesModal,
-  setShowInviteModal
+  mounted
 }: MobileHeaderProps) {
   return (
     <header 
       ref={headerRef}
-      className="flex items-center justify-between px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] border-b border-border/50 fixed top-0 left-0 right-0 z-[60] theme-transition glass-header gsap-reveal-fade-init"
+      className="flex items-center justify-between px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] border-b border-border/50 fixed top-0 left-0 right-0 z-[60] theme-transition glass-header vt-header gsap-reveal-fade-init"
     >
       <div className="flex items-center gap-3">
         <div ref={avatarRefMobile} className="relative w-10 h-10 rounded-xl overflow-hidden bg-muted border border-border theme-transition">
@@ -58,20 +53,6 @@ export function MobileHeader({
           resolvedTheme={resolvedTheme}
           mounted={mounted}
         />
-        <div className="flex items-center gap-2 md:hidden">
-          <button 
-            onClick={() => setShowRulesModal(true)}
-            className="p-2 bg-muted border border-border rounded-xl text-muted-foreground hover:text-orange-500 transition-colors"
-          >
-            <Sparkles size={20} />
-          </button>
-          <button 
-            onClick={() => setShowInviteModal(true)}
-            className="p-2 bg-orange-500 text-white rounded-xl shadow-lg shadow-orange-500/20"
-          >
-            <Plus size={20} />
-          </button>
-        </div>
       </div>
     </header>
   );

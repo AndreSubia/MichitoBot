@@ -10,11 +10,30 @@ export function useChat() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const shouldStickToBottomRef = useRef(false);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    const scroller = scrollRef.current;
+    if (!scroller) return;
+
+    const updateStickiness = () => {
+      const distanceFromBottom =
+        scroller.scrollHeight - (scroller.scrollTop + scroller.clientHeight);
+      shouldStickToBottomRef.current = distanceFromBottom < 120;
+    };
+
+    updateStickiness();
+    scroller.addEventListener("scroll", updateStickiness, { passive: true });
+    return () => {
+      scroller.removeEventListener("scroll", updateStickiness);
+    };
+  }, []);
+
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    if (!scroller) return;
+    if (!shouldStickToBottomRef.current) return;
+    scroller.scrollTop = scroller.scrollHeight;
   }, [messages]);
 
   const handleSend = async (e?: React.FormEvent) => {
@@ -22,6 +41,7 @@ export function useChat() {
     if (!input.trim() || isLoading) return;
 
     const userMsg: Message = { role: "user", content: input };
+    shouldStickToBottomRef.current = true;
     setMessages(prev => [...prev, userMsg]);
     setInput("");
     setIsLoading(true);
