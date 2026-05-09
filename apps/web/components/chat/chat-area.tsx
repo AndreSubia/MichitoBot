@@ -85,15 +85,15 @@ export function ChatArea({
       <div
         data-chat-shell
         className={cn(
-          "relative rounded-3xl border border-border bg-background/60 glass-header overflow-hidden flex flex-col h-full",
+          "relative rounded-3xl border border-border bg-background/88 glass-header [--glass-alpha:0.9] [--glass-blur:32px] overflow-hidden flex flex-col h-full",
           className
         )}
       >
-        <div className="absolute top-0 left-0 right-0 z-10 border-b border-border/50 glass-header [--glass-alpha:0.32] [--glass-blur:14px]">
-          <div className="px-5 md:px-6 py-4 flex items-center justify-between gap-3">
-          <div>
+        <div className="absolute top-0 left-0 right-0 z-10 border-b border-border/50 glass-header [--glass-alpha:0.9] [--glass-blur:32px]">
+          <div className="px-5 md:px-6 py-4 flex items-center justify-between gap-3 min-w-0">
+          <div className="min-w-0">
             <div className="text-xs font-semibold text-muted-foreground tracking-wider">CHAT</div>
-            <div className="mt-1 text-lg font-bold tracking-tight">Habla con Michito</div>
+            <div className="mt-1 text-lg font-bold tracking-tight truncate">Habla con Michito</div>
           </div>
           {typeof rulesCount === "number" && (
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-[11px] text-muted-foreground glass-header">
@@ -160,14 +160,14 @@ export function ChatArea({
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-border/50 glass-footer [--glass-alpha:0.32] [--glass-blur:14px] p-4 md:p-5">
+        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-border/50 glass-footer [--glass-alpha:0.9] [--glass-blur:32px] p-4 md:p-5">
           <form onSubmit={onSubmit} className="relative theme-transition">
             <input 
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Habla con Michito..."
-              className="w-full bg-transparent border border-border rounded-2xl py-4 pl-6 pr-14 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all text-base md:text-sm text-foreground placeholder:text-muted-foreground theme-transition"
+              className="w-full bg-transparent border border-border rounded-2xl py-4 pl-6 pr-14 focus:outline-none focus:border-orange-500 transition-colors text-base md:text-sm text-foreground placeholder:text-muted-foreground theme-transition"
             />
             <button 
               type="submit"

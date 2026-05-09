@@ -39,7 +39,7 @@ export function Sidebar({
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
           <Settings size={16} />
-          <span>ESTADO DEL MODELO</span>
+          <span className="truncate">ESTADO DEL MODELO</span>
         </div>
         <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-3">
           <div className="flex justify-between items-center text-xs">
@@ -57,7 +57,7 @@ export function Sidebar({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
             <Sparkles size={16} />
-            <span>REGLAS DE ENTRENAMIENTO</span>
+            <span className="truncate">REGLAS DE ENTRENAMIENTO</span>
           </div>
         </div>
         

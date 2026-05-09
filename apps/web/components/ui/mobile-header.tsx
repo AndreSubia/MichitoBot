@@ -28,7 +28,7 @@ export function MobileHeader({
       ref={headerRef}
       className="flex items-center justify-between px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] border-b border-border/50 fixed top-0 left-0 right-0 z-[60] theme-transition glass-header vt-header gsap-reveal-fade-init"
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 min-w-0">
         <div ref={avatarRefMobile} className="relative w-10 h-10 rounded-xl overflow-hidden bg-muted border border-border theme-transition">
           <Image 
             src="/avatar.png" 
@@ -37,11 +37,15 @@ export function MobileHeader({
             className="object-cover"
           />
         </div>
-        <div>
-          <h1 className="text-base font-bold tracking-tight theme-transition">Michito Bot</h1>
-          <div className="flex items-center gap-1">
+        <div className="min-w-0">
+          <h1 className="text-base font-bold tracking-tight theme-transition truncate max-w-[52vw]">
+            Michito Bot
+          </h1>
+          <div className="flex items-center gap-1 min-w-0">
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-            <span className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">En línea</span>
+            <span className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider truncate">
+              En línea
+            </span>
           </div>
         </div>
       </div>

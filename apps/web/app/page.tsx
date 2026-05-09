@@ -576,9 +576,6 @@ export default function DemoPage() {
                               <Sparkles size={16} />
                               <span>Reglas de entrenamiento</span>
                             </div>
-                            <div className="text-[11px] text-muted-foreground">
-                              Se aplican al instante
-                            </div>
                           </div>
 
                           <form onSubmit={handleCreateRule} className="relative mt-4">
