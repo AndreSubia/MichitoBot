@@ -206,7 +206,7 @@ export function ChatArea({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Habla con Michito..."
-              className="w-full bg-black/[0.04] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] rounded-xl py-3.5 pl-5 pr-14 focus:outline-none focus:ring-2 focus:ring-[#f43f8e]/40 focus:border-transparent transition-all text-base md:text-sm text-foreground placeholder:text-muted-foreground"
+              className="w-full bg-black/[0.04] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] rounded-xl py-3.5 pl-5 pr-14 focus:outline-none focus:border-[#f43f8e] focus:ring-2 focus:ring-[#f43f8e]/35 transition-colors text-base md:text-sm text-foreground placeholder:text-muted-foreground"
             />
             <button
               type="submit"
