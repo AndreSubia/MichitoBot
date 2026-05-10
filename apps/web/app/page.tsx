@@ -13,9 +13,12 @@ if (typeof window !== "undefined") {
 
 import { useChat } from "../hooks/use-chat";
 import { useRules } from "../hooks/use-rules";
+import { usePet } from "../hooks/use-pet";
+
 import { ChatArea } from "../components/chat/chat-area";
 import { MobileHeader } from "../components/ui/mobile-header";
 import { Modals } from "../components/ui/modals";
+import { PetStatusMini } from "../components/pet/pet-status-mini";
 
 const FEATURES = [
   {
@@ -81,6 +84,7 @@ export default function DemoPage() {
     handleCreateRule,
   } = useRules();
 
+  const { pet } = usePet();
 
   const [mounted, setMounted] = useState(false);
   const [isLoadingTheme, setIsLoadingTheme] = useState(false);
@@ -109,6 +113,16 @@ export default function DemoPage() {
   const mobileHeaderRef = useRef<HTMLElement>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
   const pageScrollRef = useRef<HTMLDivElement>(null);
+  const chatSectionRef = useRef<HTMLDivElement>(null);
+
+  const scrollToChat = () => {
+    const scroller = pageScrollRef.current;
+    const chatSection = chatSectionRef.current;
+    if (!scroller || !chatSection) return;
+
+    const top = chatSection.offsetTop;
+    scroller.scrollTo({ top: Math.max(0, top - 24), behavior: "smooth" });
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -454,26 +468,39 @@ export default function DemoPage() {
                       data-showcase-reveal
                       data-slide-from="right"
                     >
-                      <div className="relative select-none pointer-events-none pt-16" aria-hidden="true">
+                      <div className="relative select-none pt-16">
 
                         {/* Tilted bg cards — CSS float animations (transform set fully in keyframes) */}
                         <div className="absolute inset-6 rounded-2xl bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.07] animate-float-card-a" />
                         <div className="absolute inset-6 rounded-2xl bg-[#f43f8e]/[0.04] border border-[#f43f8e]/10 animate-float-card-b" />
 
                         {/* Main chat card */}
-                        <div className="relative mx-6 rounded-2xl border border-black/[0.07] dark:border-white/[0.10] bg-white/85 dark:bg-white/[0.05] backdrop-blur-xl shadow-2xl shadow-black/20 p-5">
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={scrollToChat}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") scrollToChat();
+                          }}
+                          className="relative mx-6 rounded-2xl border border-black/[0.07] dark:border-white/[0.10] bg-white/85 dark:bg-white/[0.05] backdrop-blur-xl shadow-2xl shadow-black/20 p-5 cursor-pointer"
+                        >
 
                           {/* Header */}
-                          <div className="flex items-center gap-3 pb-3 border-b border-black/[0.06] dark:border-white/[0.08]">
-                            <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-[#f43f8e] to-[#8b5cf6] overflow-hidden shrink-0">
-                              <Image src="/avatar.png" alt="" fill className="object-cover p-0.5" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-bold truncate">Michito Bot</p>
-                              <div className="flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full shrink-0 shadow-sm shadow-emerald-400/60" />
-                                <span className="text-[10px] text-muted-foreground">En línea · Discord</span>
+                          <div className="flex items-center justify-between gap-3 pb-3 border-b border-black/[0.06] dark:border-white/[0.08]">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-[#f43f8e] to-[#8b5cf6] overflow-hidden shrink-0">
+                                <Image src="/avatar.png" alt="" fill className="object-cover p-0.5" />
                               </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold truncate">Michito Bot</p>
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full shrink-0 shadow-sm shadow-emerald-400/60" />
+                                  <span className="text-[10px] text-muted-foreground truncate">En línea · Discord</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                              <PetStatusMini pet={pet} onOpen={scrollToChat} />
                             </div>
                           </div>
 
@@ -642,6 +669,7 @@ export default function DemoPage() {
                     className="md:col-span-8 h-[min(58vh,700px)] md:h-[min(66vh,760px)]"
                     data-control-card
                     data-slide-from="right"
+                    ref={chatSectionRef}
                   >
                     <ChatArea
                       messages={messages}
