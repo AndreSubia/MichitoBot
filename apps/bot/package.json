@@ -4,7 +4,6 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "pnpm --filter @michito/shared build && pnpm --filter @michito/db build && pnpm --filter @michito/discord build && pnpm --filter @michito/ai build",
     "dev": "tsx watch src/index.ts",
     "build": "tsc -b",
     "typecheck": "tsc -b",

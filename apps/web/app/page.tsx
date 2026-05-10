@@ -81,6 +81,7 @@ export default function DemoPage() {
     handleCreateRule,
   } = useRules();
 
+
   const [mounted, setMounted] = useState(false);
   const [isLoadingTheme, setIsLoadingTheme] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -557,45 +558,36 @@ export default function DemoPage() {
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start md:items-end">
 
                   {/* Training panel */}
-                  <div className="md:col-span-4 sticky-desktop">
+                  <div className="md:col-span-4 sticky-desktop md:h-[min(66vh,760px)]">
                     <div
-                      className="rounded-3xl border border-border bg-background/60 glass-header p-6 md:p-7"
+                      className="rounded-3xl border border-black/[0.06] dark:border-white/[0.08] bg-background/60 glass-header p-6 md:p-7 shadow-xl dark:shadow-black/40 md:h-full md:flex md:flex-col"
                       data-control-card
                       data-slide-from="left"
                     >
                       <div>
                         <div className="text-[11px] font-semibold text-muted-foreground tracking-widest">PANEL</div>
-                        <div className="mt-2 text-xl md:text-2xl font-display font-bold tracking-tight">
-                          Entrena a Michito
+                        <div className="mt-2 flex items-center justify-between gap-3 flex-wrap">
+                          <div className="text-xl md:text-2xl font-display font-bold tracking-tight">
+                            Entrena a Michito
+                          </div>
+                          <div className="inline-flex items-center gap-1.5 rounded-full border border-black/[0.06] dark:border-white/[0.06] bg-card/70 dark:bg-white/[0.04] px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground shrink-0">
+                            <Settings size={11} className="text-[#c084fc]" />
+                            <span>
+                              <span className="bg-gradient-to-r from-[#f43f8e] to-[#a855f7] bg-clip-text text-transparent">Dinámica</span>
+                              <span className="opacity-50"> · </span>
+                              <span className="text-emerald-500 dark:text-emerald-400 font-mono">{rules.length}</span>
+                              <span> {rules.length === 1 ? "regla" : "reglas"}</span>
+                            </span>
+                          </div>
                         </div>
                         <div className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-                          Añade reglas, cambia el tono y ajusta la personalidad en tiempo real. Los cambios aplican de inmediato, sin reiniciar nada.
+                          Personalidad en tiempo real, sin reiniciar.
                         </div>
                       </div>
 
-                      <div className="mt-6 grid grid-cols-1 gap-4">
-                        {/* Model status */}
-                        <div className="rounded-2xl border border-border bg-muted/30 p-5">
-                          <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
-                            <Settings size={16} className="text-[#c084fc]" />
-                            <span>Estado del modelo</span>
-                          </div>
-                          <div className="mt-4 bg-background/50 border border-border rounded-xl p-4 space-y-3">
-                            <div className="flex justify-between items-center text-xs">
-                              <span className="text-muted-foreground">Personalidad</span>
-                              <span className="bg-gradient-to-r from-[#f43f8e] to-[#a855f7] bg-clip-text text-transparent font-semibold font-mono">
-                                Dinámica
-                              </span>
-                            </div>
-                            <div className="flex justify-between items-center text-xs">
-                              <span className="text-muted-foreground">Reglas activas</span>
-                              <span className="text-emerald-500 dark:text-emerald-400 font-mono">{rules.length}</span>
-                            </div>
-                          </div>
-                        </div>
-
+                      <div className="mt-5 flex flex-col gap-4 md:flex-1 md:min-h-0">
                         {/* Rules */}
-                        <div className="rounded-2xl border border-border bg-muted/30 p-5">
+                        <div className="rounded-2xl border border-black/[0.06] dark:border-white/[0.06] bg-muted/30 dark:bg-white/[0.02] p-5 md:flex md:flex-col md:flex-1 md:min-h-0">
                           <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
                             <Sparkles size={16} className="text-[#c084fc]" />
                             <span>Reglas de entrenamiento</span>
@@ -607,7 +599,7 @@ export default function DemoPage() {
                               value={ruleInput}
                               onChange={(e) => setRuleInput(e.target.value)}
                               placeholder="Nueva regla (ej: sé sarcástico)"
-                              className="w-full bg-background/60 border border-border rounded-2xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-[#f43f8e]/40 text-foreground placeholder:text-muted-foreground theme-transition"
+                              className="w-full bg-background/60 border border-black/[0.06] dark:border-white/[0.08] rounded-2xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-[#f43f8e]/40 text-foreground placeholder:text-muted-foreground"
                             />
                             <button
                               type="submit"
@@ -618,22 +610,28 @@ export default function DemoPage() {
                             </button>
                           </form>
 
-                          <div className="mt-4 grid grid-cols-1 gap-3">
-                            {rules.length === 0 ? (
-                              <div className="text-sm text-muted-foreground italic text-center py-8 bg-background/30 rounded-2xl border border-dashed border-border">
-                                No hay reglas todavía. Crea la primera arriba.
+                          {rules.length === 0 ? (
+                            <div className="mt-4 md:flex-1 md:flex md:items-center md:justify-center text-sm text-muted-foreground italic text-center py-8 bg-background/30 rounded-2xl border border-dashed border-black/[0.10] dark:border-white/[0.10]">
+                              No hay reglas todavía. Crea la primera arriba.
+                            </div>
+                          ) : (
+                            <div className="mt-4 md:flex md:flex-col md:flex-1 md:min-h-0">
+                              <div className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
+                                <span>{rules.length} {rules.length === 1 ? "regla" : "reglas"}</span>
+                                {rules.length > 4 && <span className="opacity-60">scroll ↕</span>}
                               </div>
-                            ) : (
-                              rules.map((rule) => (
-                                <div
-                                  key={rule.id}
-                                  className="p-4 rounded-2xl bg-background/50 border border-border text-sm text-foreground leading-relaxed hover:border-[#f43f8e]/30 transition-colors"
-                                >
-                                  {rule.text}
-                                </div>
-                              ))
-                            )}
-                          </div>
+                              <div className="grid grid-cols-1 gap-3 max-h-[18rem] md:max-h-none md:flex-1 md:min-h-0 overflow-y-auto custom-scrollbar pr-1.5">
+                                {rules.map((rule) => (
+                                  <div
+                                    key={rule.id}
+                                    className="group p-4 rounded-2xl bg-card dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.06] text-sm text-foreground leading-relaxed shadow-sm dark:shadow-none hover:border-[#f43f8e]/30 hover:bg-card dark:hover:bg-white/[0.07] transition-colors"
+                                  >
+                                    {rule.text}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

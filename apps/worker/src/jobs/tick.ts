@@ -27,7 +27,7 @@ export async function bootstrapTickRepeatJob(tickQueue: Queue) {
     {},
     {
       repeat: { pattern: repeatPattern },
-      jobId: "tick:scan:repeat",
+      jobId: "tick_scan_repeat",
       removeOnComplete: 50,
       removeOnFail: 100,
     },
@@ -43,6 +43,7 @@ export function startTickWorker(options: StartTickWorkerOptions) {
     async (job) => {
       if (job.name === "scan") {
         const due = await petRepo.claimDuePets(new Date(), scanBatchSize);
+        console.log(`tick.scan: due=${due.length}`);
         if (due.length === 0) return { picked: 0 };
         await Promise.all(
           due.map((pet) =>
@@ -50,7 +51,7 @@ export function startTickWorker(options: StartTickWorkerOptions) {
               "apply",
               { petId: pet.id, enqueuedAt: new Date().toISOString() },
               {
-                jobId: `tick:apply:${pet.id}:${pet.lastTickAt.toISOString()}`,
+                jobId: `tick_apply_${pet.id}_${pet.lastTickAt.getTime()}`,
                 removeOnComplete: 100,
                 removeOnFail: 200,
               },
@@ -63,6 +64,9 @@ export function startTickWorker(options: StartTickWorkerOptions) {
       if (job.name === "apply") {
         const data = job.data as TickApplyData;
         const result = await petRepo.tickPet(data.petId);
+        console.log(
+          `tick.apply: pet=${data.petId.slice(0, 8)} applied=${result.applied} dead=${result.transitionedToDead}`,
+        );
         if (result.transitionedToDead) {
           await onDeath(data.petId, result.guildId, result.causeOfDeath);
         }

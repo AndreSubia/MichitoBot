@@ -1,12 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { Send, Sparkles, User } from "lucide-react";
+import { Heart, Send, Sparkles, User } from "lucide-react";
 import { cn } from "../ui/utils";
 import { Message } from "../../types";
-import { RefObject, useLayoutEffect, useRef } from "react";
+import { RefObject, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { usePet } from "../../hooks/use-pet";
+import { PetStatusMini } from "../pet/pet-status-mini";
+import { PetStatusModal } from "../pet/pet-status-modal";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -36,6 +39,8 @@ export function ChatArea({
   className,
 }: ChatAreaProps) {
   const chatRowAnimatedRef = useRef<WeakSet<Element>>(new WeakSet());
+  const [showPetModal, setShowPetModal] = useState(false);
+  const { pet, error: petError, setPet } = usePet();
 
   useLayoutEffect(() => {
     const scroller = scrollRef.current;
@@ -85,12 +90,12 @@ export function ChatArea({
       <div
         data-chat-shell
         className={cn(
-          "relative rounded-2xl border border-border dark:border-white/[0.10] bg-card/90 dark:bg-white/[0.04] backdrop-blur-xl overflow-hidden flex flex-col h-full shadow-xl dark:shadow-black/40",
+          "relative rounded-2xl border border-black/[0.06] dark:border-white/[0.08] bg-card/90 dark:bg-white/[0.04] backdrop-blur-xl overflow-hidden flex flex-col h-full shadow-xl dark:shadow-black/40",
           className
         )}
       >
         {/* Header */}
-        <div className="absolute top-0 left-0 right-0 z-10 border-b border-border/60 dark:border-white/[0.08] glass-header [--glass-alpha:0.92] [--glass-blur:28px]">
+        <div className="absolute top-0 left-0 right-0 z-10 border-b border-black/[0.05] dark:border-white/[0.06] glass-header [--glass-alpha:0.92] [--glass-blur:28px]">
           <div className="px-5 md:px-6 py-3.5 flex items-center justify-between gap-3 min-w-0">
             <div className="flex items-center gap-3 min-w-0">
               <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-[#f43f8e] to-[#8b5cf6] overflow-hidden shrink-0 shadow-md shadow-[#f43f8e]/20">
@@ -106,12 +111,24 @@ export function ChatArea({
                 </div>
               </div>
             </div>
-            {typeof rulesCount === "number" && (
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-[#f43f8e]/25 bg-[#f43f8e]/10 px-3 py-1 text-[11px] text-[#f43f8e] dark:text-[#f9a8d4] font-medium shrink-0">
-                <Sparkles size={12} />
-                {rulesCount} reglas
-              </div>
-            )}
+            <div className="flex items-center gap-2 shrink-0">
+              <PetStatusMini pet={pet} onOpen={() => setShowPetModal(true)} />
+              <button
+                type="button"
+                onClick={() => setShowPetModal(true)}
+                className="md:hidden inline-flex items-center gap-1.5 rounded-full border border-border/60 dark:border-white/[0.06] bg-muted/40 dark:bg-white/[0.04] px-2.5 py-1 text-[11px] text-foreground hover:bg-muted/60 dark:hover:bg-white/[0.08] transition-colors"
+                aria-label="Ver estado de Michi"
+              >
+                <Heart size={12} className="text-rose-400" />
+                Estado
+              </button>
+              {typeof rulesCount === "number" && (
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-[#f43f8e]/25 bg-[#f43f8e]/10 px-3 py-1 text-[11px] text-[#f43f8e] dark:text-[#f9a8d4] font-medium">
+                  <Sparkles size={12} />
+                  {rulesCount} reglas
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -182,14 +199,14 @@ export function ChatArea({
         </div>
 
         {/* Input footer */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-border/60 dark:border-white/[0.08] glass-footer [--glass-alpha:0.92] [--glass-blur:28px] p-4 md:p-5">
+        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-black/[0.05] dark:border-white/[0.06] glass-footer [--glass-alpha:0.92] [--glass-blur:28px] p-4 md:p-5">
           <form onSubmit={onSubmit} className="relative">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Habla con Michito..."
-              className="w-full bg-black/[0.04] dark:bg-white/[0.05] border border-border dark:border-white/[0.10] rounded-xl py-3.5 pl-5 pr-14 focus:outline-none focus:ring-2 focus:ring-[#f43f8e]/40 focus:border-transparent transition-all text-base md:text-sm text-foreground placeholder:text-muted-foreground"
+              className="w-full bg-black/[0.04] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] rounded-xl py-3.5 pl-5 pr-14 focus:outline-none focus:ring-2 focus:ring-[#f43f8e]/40 focus:border-transparent transition-all text-base md:text-sm text-foreground placeholder:text-muted-foreground"
             />
             <button
               type="submit"
@@ -201,6 +218,13 @@ export function ChatArea({
           </form>
         </div>
       </div>
+      <PetStatusModal
+        open={showPetModal}
+        onClose={() => setShowPetModal(false)}
+        pet={pet}
+        error={petError}
+        onPetUpdated={setPet}
+      />
     </section>
   );
 }

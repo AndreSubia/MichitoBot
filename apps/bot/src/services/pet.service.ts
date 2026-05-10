@@ -1,40 +1,8 @@
 import { EmbedBuilder } from "discord.js";
 import { petRepo } from "@michito/db";
-import type { DeltaIntent } from "@michito/shared";
+import { PET_ACTIONS, type PetActionDef } from "@michito/shared";
 
-export interface PetActionDef {
-  kind: string;
-  delta: DeltaIntent;
-  flavor: string;
-}
-
-export const PET_ACTIONS: Record<string, PetActionDef> = {
-  FEED: {
-    kind: "FEED",
-    delta: { hunger: -25, mood: 5 },
-    flavor: "🍤 Michi devoró tus croquetas.",
-  },
-  PLAY: {
-    kind: "PLAY",
-    delta: { energy: -15, mood: 12, hunger: 3 },
-    flavor: "🎾 Michi te persiguió toda la sala.",
-  },
-  SLEEP: {
-    kind: "SLEEP",
-    delta: { energy: 20, mood: 5 },
-    flavor: "😴 Michi se acurrucó un rato.",
-  },
-  PET: {
-    kind: "PET",
-    delta: { mood: 3 },
-    flavor: "🐱 Michi ronronea.",
-  },
-  HEAL: {
-    kind: "HEAL",
-    delta: { health: 20, mood: 4 },
-    flavor: "💊 Le diste medicina.",
-  },
-};
+export { PET_ACTIONS, type PetActionDef };
 
 export async function performAction(
   guildId: string,

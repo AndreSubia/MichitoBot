@@ -11,3 +11,23 @@ export type Rule = {
   ruleType?: string;
   isActive?: boolean;
 };
+
+export type PetState = "ALIVE" | "SLEEPING" | "SICK" | "DEAD";
+
+export type Pet = {
+  id: string;
+  name: string;
+  state: PetState;
+  hunger: number;
+  energy: number;
+  health: number;
+  mood: number;
+  level: number;
+  xp: number;
+  bornAt: string;
+  diedAt: string | null;
+  causeOfDeath: string | null;
+  deathCount: number;
+  lastTickAt: string;
+  nextTickAt: string;
+};

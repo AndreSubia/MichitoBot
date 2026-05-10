@@ -4,7 +4,6 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "pnpm --filter @michito/shared build && pnpm --filter @michito/db build && pnpm --filter @michito/ai build",
     "dev": "next dev -p 3000",
     "build": "next build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
