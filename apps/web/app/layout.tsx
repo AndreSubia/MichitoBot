@@ -1,6 +1,19 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "./components/theme-provider";
+import { Syne, Plus_Jakarta_Sans } from "next/font/google";
+
+const syne = Syne({
+  subsets: ["latin"],
+  variable: "--font-syne",
+  weight: ["700", "800"],
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "Michito Bot Demo",
@@ -14,7 +27,7 @@ export const viewport: Viewport = {
   userScalable: false,
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0e1c" },
   ],
 };
 
@@ -25,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body>
+      <body className={`${syne.variable} ${jakarta.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

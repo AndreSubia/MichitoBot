@@ -33,7 +33,7 @@ export function ChatArea({
   scrollRef,
   chatContainerRef,
   rulesCount,
-  className
+  className,
 }: ChatAreaProps) {
   const chatRowAnimatedRef = useRef<WeakSet<Element>>(new WeakSet());
 
@@ -65,8 +65,8 @@ export function ChatArea({
                 scroller,
                 start: "top 92%",
                 end: "top 70%",
-                toggleActions: "play none none reverse"
-              }
+                toggleActions: "play none none reverse",
+              },
             }
           );
         });
@@ -85,57 +85,78 @@ export function ChatArea({
       <div
         data-chat-shell
         className={cn(
-          "relative rounded-3xl border border-border bg-background/88 glass-header [--glass-alpha:0.9] [--glass-blur:32px] overflow-hidden flex flex-col h-full",
+          "relative rounded-2xl border border-border dark:border-white/[0.10] bg-card/90 dark:bg-white/[0.04] backdrop-blur-xl overflow-hidden flex flex-col h-full shadow-xl dark:shadow-black/40",
           className
         )}
       >
-        <div className="absolute top-0 left-0 right-0 z-10 border-b border-border/50 glass-header [--glass-alpha:0.9] [--glass-blur:32px]">
-          <div className="px-5 md:px-6 py-4 flex items-center justify-between gap-3 min-w-0">
-          <div className="min-w-0">
-            <div className="text-xs font-semibold text-muted-foreground tracking-wider">CHAT</div>
-            <div className="mt-1 text-lg font-bold tracking-tight truncate">Habla con Michito</div>
-          </div>
-          {typeof rulesCount === "number" && (
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-[11px] text-muted-foreground glass-header">
-              <Sparkles size={14} className="text-orange-500" />
-              {rulesCount} reglas
+        {/* Header */}
+        <div className="absolute top-0 left-0 right-0 z-10 border-b border-border/60 dark:border-white/[0.08] glass-header [--glass-alpha:0.92] [--glass-blur:28px]">
+          <div className="px-5 md:px-6 py-3.5 flex items-center justify-between gap-3 min-w-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-[#f43f8e] to-[#8b5cf6] overflow-hidden shrink-0 shadow-md shadow-[#f43f8e]/20">
+                <Image src="/avatar.png" alt="Michito" fill className="object-cover p-0.5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-sm font-bold tracking-tight truncate">Michito Bot</div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shadow-sm shadow-emerald-400/60" />
+                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+                    En línea
+                  </span>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+            {typeof rulesCount === "number" && (
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-[#f43f8e]/25 bg-[#f43f8e]/10 px-3 py-1 text-[11px] text-[#f43f8e] dark:text-[#f9a8d4] font-medium shrink-0">
+                <Sparkles size={12} />
+                {rulesCount} reglas
+              </div>
+            )}
+          </div>
         </div>
 
+        {/* Scroll area */}
         <div className="flex-1 min-h-0">
           <div
             ref={scrollRef}
-            className="h-full overflow-y-auto overflow-x-hidden overscroll-x-none [touch-action:pan-y] pt-20 pb-24 scroll-smooth custom-scrollbar theme-transition"
+            className="h-full overflow-y-auto overflow-x-hidden overscroll-x-none [touch-action:pan-y] pt-[4.5rem] pb-24 scroll-smooth custom-scrollbar"
           >
-            <div className="px-5 md:px-6 py-6">
-              <div ref={chatContainerRef} className="space-y-6 theme-transition">
+            <div className="px-5 md:px-6 py-4">
+              <div ref={chatContainerRef} className="space-y-4">
                 {messages.map((msg, i) => (
-                  <div 
+                  <div
                     key={i}
                     data-chat-row
                     className={cn(
-                      "flex gap-4 items-start w-full animate-in fade-in slide-in-from-bottom-2 duration-300 theme-transition",
-                      msg.role === "user" ? "flex-row-reverse justify-start" : "justify-start"
+                      "flex gap-3 items-end w-full animate-in fade-in slide-in-from-bottom-2 duration-300",
+                      msg.role === "user" ? "flex-row-reverse" : "justify-start"
                     )}
                   >
-                    <div className={cn(
-                      "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 overflow-hidden theme-transition",
-                      msg.role === "assistant" ? "bg-orange-500" : "bg-muted border border-border"
-                    )}>
+                    <div
+                      className={cn(
+                        "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 overflow-hidden",
+                        msg.role === "assistant"
+                          ? "bg-gradient-to-br from-[#f43f8e] to-[#8b5cf6]"
+                          : "bg-muted/60 dark:bg-white/[0.08] border border-border"
+                      )}
+                    >
                       {msg.role === "assistant" ? (
-                        <div className="relative w-full h-full theme-transition">
-                          <Image src="/avatar.png" alt="Michito" fill className="object-cover p-0.5" />
+                        <div className="relative w-full h-full">
+                          <Image src="/avatar.png" alt="Michito" fill className="object-cover" />
                         </div>
-                      ) : <User size={20} className="text-muted-foreground theme-transition" />}
+                      ) : (
+                        <User size={14} className="text-muted-foreground" />
+                      )}
                     </div>
-                    <div className={cn(
-                      "p-4 rounded-2xl text-sm leading-relaxed shadow-sm theme-transition max-w-[78%] md:max-w-[66%] break-words",
-                      msg.role === "assistant" 
-                        ? "bg-card border border-border text-foreground" 
-                        : "bg-orange-600 text-white shadow-orange-900/10"
-                    )}>
+
+                    <div
+                      className={cn(
+                        "px-4 py-3 text-sm leading-relaxed max-w-[76%] md:max-w-[68%] break-words",
+                        msg.role === "assistant"
+                          ? "bg-black/[0.05] dark:bg-white/[0.07] rounded-2xl rounded-bl-sm text-foreground"
+                          : "bg-gradient-to-r from-[#f43f8e] to-[#a855f7] rounded-2xl rounded-br-sm text-white shadow-md shadow-[#f43f8e]/20"
+                      )}
+                    >
                       {msg.content}
                     </div>
                   </div>
@@ -143,16 +164,16 @@ export function ChatArea({
               </div>
 
               {isLoading && (
-                <div className="mt-6 flex gap-4 items-start w-full">
-                  <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center animate-pulse overflow-hidden">
+                <div className="mt-4 flex gap-3 items-end">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#f43f8e] to-[#8b5cf6] overflow-hidden shrink-0 animate-pulse">
                     <div className="relative w-full h-full">
-                      <Image src="/avatar.png" alt="Michito" fill className="object-cover p-0.5" />
+                      <Image src="/avatar.png" alt="Michito" fill className="object-cover" />
                     </div>
                   </div>
-                  <div className="bg-card border border-border p-4 rounded-2xl flex gap-1 items-center">
-                    <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                    <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce"></span>
+                  <div className="bg-black/[0.05] dark:bg-white/[0.07] px-4 py-3 rounded-2xl rounded-bl-sm flex gap-1.5 items-center">
+                    <span className="w-1.5 h-1.5 bg-[#c084fc] rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-1.5 h-1.5 bg-[#c084fc] rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1.5 h-1.5 bg-[#c084fc] rounded-full animate-bounce" />
                   </div>
                 </div>
               )}
@@ -160,21 +181,22 @@ export function ChatArea({
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-border/50 glass-footer [--glass-alpha:0.9] [--glass-blur:32px] p-4 md:p-5">
-          <form onSubmit={onSubmit} className="relative theme-transition">
-            <input 
+        {/* Input footer */}
+        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-border/60 dark:border-white/[0.08] glass-footer [--glass-alpha:0.92] [--glass-blur:28px] p-4 md:p-5">
+          <form onSubmit={onSubmit} className="relative">
+            <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Habla con Michito..."
-              className="w-full bg-transparent border border-border rounded-2xl py-4 pl-6 pr-14 focus:outline-none focus:border-orange-500 transition-colors text-base md:text-sm text-foreground placeholder:text-muted-foreground theme-transition"
+              className="w-full bg-black/[0.04] dark:bg-white/[0.05] border border-border dark:border-white/[0.10] rounded-xl py-3.5 pl-5 pr-14 focus:outline-none focus:ring-2 focus:ring-[#f43f8e]/40 focus:border-transparent transition-all text-base md:text-sm text-foreground placeholder:text-muted-foreground"
             />
-            <button 
+            <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="absolute right-2 top-2 bottom-2 px-4 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:hover:bg-orange-500 rounded-xl transition-colors flex items-center justify-center text-white z-30 theme-transition"
+              className="absolute right-2 top-2 bottom-2 px-4 bg-gradient-to-r from-[#f43f8e] to-[#a855f7] hover:opacity-90 disabled:opacity-40 rounded-lg transition-opacity flex items-center justify-center text-white z-30"
             >
-              <Send size={18} />
+              <Send size={16} />
             </button>
           </form>
         </div>
