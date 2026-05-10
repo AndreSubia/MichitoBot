@@ -29,6 +29,13 @@ enum ModerationActionKind {
   FLAG
 }
 
+enum PetState {
+  ALIVE
+  SLEEPING
+  SICK
+  DEAD
+}
+
 model GuildSettings {
   guildId     String   @id
   personality String?
@@ -44,8 +51,8 @@ model GuildAllowedChannel {
   channelId String
   createdAt DateTime @default(now())
 
-  @@index([guildId])
   @@unique([guildId, channelId])
+  @@index([guildId])
   @@map("guild_allowed_channels")
 }
 
@@ -57,20 +64,20 @@ model GuildRolePolicy {
   canRevoke Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  @@index([guildId])
   @@unique([guildId, roleId])
+  @@index([guildId])
   @@map("guild_role_policies")
 }
 
 model KnowledgeEntry {
-  id                  String        @id @default(cuid())
+  id                  String           @id @default(cuid())
   guildId             String
   kind                KnowledgeKind
   title               String?
   content             String
-  approvedForTraining Boolean       @default(false)
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  approvedForTraining Boolean          @default(false)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
   chunks              KnowledgeChunk[]
 
   @@index([guildId])
@@ -78,12 +85,12 @@ model KnowledgeEntry {
 }
 
 model KnowledgeChunk {
-  id        String  @id @default(cuid())
+  id        String                 @id @default(cuid())
   guildId   String
   entryId   String
   content   String
   embedding Unsupported("vector")?
-  createdAt DateTime @default(now())
+  createdAt DateTime               @default(now())
 
   entry KnowledgeEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
 
@@ -167,4 +174,63 @@ model ModelConfig {
 
   @@unique([guildId])
   @@map("model_configs")
+}
+
+model Pet {
+  id           String    @id @default(cuid())
+  guildId      String    @unique
+  name         String    @default("Michi")
+  state        PetState  @default(ALIVE)
+  hunger       Int       @default(50)
+  energy       Int       @default(80)
+  health       Int       @default(100)
+  mood         Int       @default(70)
+  level        Int       @default(1)
+  xp           Int       @default(0)
+  bornAt       DateTime  @default(now())
+  diedAt       DateTime?
+  deathCount   Int       @default(0)
+  causeOfDeath String?
+  lastTickAt   DateTime  @default(now())
+  nextTickAt   DateTime  @default(now())
+
+  @@index([nextTickAt, state])
+  @@map("pets")
+}
+
+model TrainingRule {
+  id          String   @id @default(cuid())
+  guildId     String
+  text        String
+  createdById String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([guildId, isActive])
+  @@map("training_rules")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  guildId   String
+  petId     String
+  userId    String
+  kind      String
+  delta     Json
+  createdAt DateTime @default(now())
+
+  @@index([guildId, createdAt])
+  @@index([petId, createdAt])
+  @@map("activity_logs")
+}
+
+model RateLimitBucket {
+  id          String   @id @default(cuid())
+  scope       String
+  windowStart DateTime
+  count       Int      @default(0)
+
+  @@unique([scope, windowStart])
+  @@index([windowStart])
+  @@map("rate_limit_buckets")
 }

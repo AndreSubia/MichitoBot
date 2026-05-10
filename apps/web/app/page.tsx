@@ -378,7 +378,7 @@ export default function DemoPage() {
                     {/* ── Left: copy ── */}
                     <div className="md:col-span-7">
                       {/* Headline — uses data-hero-title for its own GSAP animation */}
-                      <h2 className="mt-5 font-display font-extrabold tracking-tight leading-none">
+                      <h2 className="mt-5 font-display font-bold tracking-tight leading-none">
                         <span
                           data-hero-title
                           className="inline-block hero-word-init text-5xl md:text-7xl bg-gradient-to-r from-[#f43f8e] via-[#c084fc] to-[#818cf8] bg-clip-text text-transparent"

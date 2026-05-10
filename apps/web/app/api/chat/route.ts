@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { OllamaLlmProvider } from "@michito/ai";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-import { existsSync } from "node:fs";
+import { OllamaLlmProvider, buildSystemPrompt, type ChatMessage } from "@michito/ai";
+import { trainingRuleRepo } from "@michito/db";
+
+export const dynamic = "force-dynamic";
 
 const OLLAMA_URL = process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434";
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "michito:latest";
+const DEMO_GUILD_ID = process.env.WEB_DEMO_GUILD_ID ?? "demo";
 
 const llm = new OllamaLlmProvider({
   baseUrl: OLLAMA_URL,
@@ -14,57 +15,36 @@ const llm = new OllamaLlmProvider({
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const messages = body.messages;
+    const body = (await req.json()) as { messages?: unknown };
+    const incoming = body.messages;
 
-    if (!messages || !Array.isArray(messages)) {
-      console.error("Invalid messages received:", body);
+    if (!Array.isArray(incoming)) {
       return NextResponse.json({ error: "No se proporcionaron mensajes válidos" }, { status: 400 });
     }
 
-    // Intentar cargar reglas para el contexto del demo
-    const rulesPath = join(process.cwd(), "../../data/style_rules.jsonl");
-    let systemPrompt = "Eres Michito, un gato asistente amigable y juguetón.";
-    
-    if (existsSync(rulesPath)) {
-      try {
-        const content = await readFile(rulesPath, "utf-8");
-        const rules = content.split("\n")
-          .filter(Boolean)
-          .map(line => {
-            try {
-              return JSON.parse(line);
-            } catch {
-              return null;
-            }
-          })
-          .filter(r => r !== null)
-          .slice(-5); // Solo las últimas 5 reglas
-        
-        if (rules.length > 0) {
-          systemPrompt += "\n\nREGLAS ACTUALES:\n" + rules.map(r => `- ${r.text}`).join("\n");
-        }
-      } catch (err) {
-        console.error("Error reading rules file:", err);
-      }
-    }
+    const messages = incoming as ChatMessage[];
+    const rules = await trainingRuleRepo.listActiveRules(DEMO_GUILD_ID, 20);
+    const systemMessage = buildSystemPrompt({
+      rules: rules.map((r) => ({ text: r.text })),
+      guildName: "Web Demo",
+    });
 
     const timestamp = new Date().toLocaleTimeString();
-    console.log(`[${timestamp}] Chat request to model: ${OLLAMA_MODEL} with ${messages.length} messages`);
+    console.log(`[${timestamp}] /api/chat → ${OLLAMA_MODEL} · ${messages.length} msgs · ${rules.length} rules`);
 
     const response = await llm.chat({
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...messages
-      ]
+      messages: [systemMessage, ...messages],
     });
 
     return NextResponse.json(response);
   } catch (error) {
     console.error("Chat Error:", error);
-    return NextResponse.json({ 
-      error: "Error al conectar con el modelo",
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Error al conectar con el modelo",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
+    );
   }
 }

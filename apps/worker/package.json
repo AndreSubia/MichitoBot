@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "pnpm --filter @michito/shared build",
+    "predev": "pnpm --filter @michito/shared build && pnpm --filter @michito/db build",
     "dev": "tsx watch src/index.ts",
     "build": "tsc -b",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -12,8 +12,10 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@michito/db": "workspace:*",
     "@michito/shared": "workspace:*",
     "bullmq": "^5.58.0",
+    "discord.js": "^14.22.1",
     "dotenv": "^17.2.0",
     "ioredis": "^5.7.0"
   }

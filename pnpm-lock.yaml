@@ -39,6 +39,9 @@ importers:
       '@michito/ai':
         specifier: workspace:*
         version: link:../../packages/ai
+      '@michito/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@michito/discord':
         specifier: workspace:*
         version: link:../../packages/discord
@@ -57,6 +60,9 @@ importers:
       '@michito/ai':
         specifier: workspace:*
         version: link:../../packages/ai
+      '@michito/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@michito/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -103,12 +109,18 @@ importers:
 
   apps/worker:
     dependencies:
+      '@michito/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@michito/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       bullmq:
         specifier: ^5.58.0
         version: 5.76.2
+      discord.js:
+        specifier: ^14.22.1
+        version: 14.26.3
       dotenv:
         specifier: ^17.2.0
         version: 17.4.2
@@ -120,6 +132,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@michito/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@prisma/adapter-pg':
         specifier: ^7.8.0
         version: 7.8.0
@@ -136,6 +151,9 @@ importers:
 
   packages/discord:
     dependencies:
+      '@michito/db':
+        specifier: workspace:*
+        version: link:../db
       discord.js:
         specifier: ^14.22.1
         version: 14.26.3

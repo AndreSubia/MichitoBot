@@ -17,6 +17,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "@michito/db": "workspace:*",
     "discord.js": "^14.22.1"
   }
 }

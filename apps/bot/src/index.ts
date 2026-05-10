@@ -1,6 +1,8 @@
 import {
+  ChannelType,
   Client,
   GatewayIntentBits,
+  PermissionFlagsBits,
   REST,
   Routes,
   SlashCommandBuilder
@@ -27,60 +29,97 @@ process.on("uncaughtException", (err) => {
   console.error("uncaughtException", err);
 });
 
+const adminPerms = PermissionFlagsBits.ManageGuild;
+
 const slashCommands = [
   new SlashCommandBuilder().setName("ping").setDescription("Health check"),
-  new SlashCommandBuilder().setName("help").setDescription("How to use Michito"),
+  new SlashCommandBuilder().setName("help").setDescription("Cómo usar Michi"),
+  new SlashCommandBuilder().setName("about").setDescription("Información sobre esta instancia"),
+
+  new SlashCommandBuilder()
+    .setName("status")
+    .setDescription("Ver el estado de Michi"),
+  new SlashCommandBuilder().setName("feed").setDescription("Dale comida a Michi"),
+  new SlashCommandBuilder().setName("play").setDescription("Juega con Michi"),
+  new SlashCommandBuilder().setName("sleep").setDescription("Deja que Michi descanse"),
+  new SlashCommandBuilder().setName("pet").setDescription("Hazle caricias a Michi"),
+
+  new SlashCommandBuilder()
+    .setName("heal")
+    .setDescription("Dale medicina a Michi (admin)")
+    .setDefaultMemberPermissions(adminPerms),
+  new SlashCommandBuilder()
+    .setName("revive")
+    .setDescription("Revive a Michi cuando muere (admin)")
+    .setDefaultMemberPermissions(adminPerms),
+
   new SlashCommandBuilder()
     .setName("chat")
-    .setDescription("Chat with Michito")
+    .setDescription("Chatea con Michi")
     .addSubcommand((s) =>
       s
         .setName("ask")
-        .setDescription("Ask a question")
+        .setDescription("Hazle una pregunta")
         .addStringOption((o) =>
-          o.setName("prompt").setDescription("What do you want to ask?").setRequired(true)
+          o.setName("prompt").setDescription("¿Qué le quieres decir?").setRequired(true)
         )
     ),
+
   new SlashCommandBuilder()
-    .setName("train")
-    .setDescription("Train Michito (local data only)")
-    .addSubcommand((s) =>
-      s
-        .setName("rule")
-        .setDescription("Save a style or preference rule")
-        .addStringOption((o) =>
-          o.setName("text").setDescription("Rule text").setRequired(true)
-        )
-        .addUserOption((o) =>
-          o
-            .setName("user")
-            .setDescription("Apply this rule only when replying to this user")
-            .setRequired(false)
-        )
-    )
+    .setName("rules")
+    .setDescription("Gestiona la personalidad de Michi")
+    .addSubcommand((s) => s.setName("list").setDescription("Ver reglas activas"))
     .addSubcommand((s) =>
       s
         .setName("add")
-        .setDescription("Save a supervised example (prompt -> ideal)")
+        .setDescription("Añadir una regla (admin)")
         .addStringOption((o) =>
-          o.setName("prompt").setDescription("User prompt").setRequired(true)
-        )
-        .addStringOption((o) =>
-          o.setName("ideal").setDescription("Ideal assistant response").setRequired(true)
-        )
-        .addStringOption((o) =>
-          o.setName("tags").setDescription("Comma-separated tags").setRequired(false)
+          o.setName("text").setDescription("Texto de la regla").setRequired(true)
         )
     )
-    .addSubcommand((s) => s.setName("profile").setDescription("Show current rules"))
     .addSubcommand((s) =>
       s
-        .setName("forget")
-        .setDescription("Remove rules that match a query")
+        .setName("remove")
+        .setDescription("Desactivar una regla (admin)")
         .addStringOption((o) =>
-          o.setName("query").setDescription("Text to match (case-insensitive)").setRequired(true)
+          o.setName("id").setDescription("Id de la regla a desactivar").setRequired(true)
         )
-    )
+    ),
+
+  new SlashCommandBuilder()
+    .setName("config")
+    .setDescription("Configura Michi en este servidor (admin)")
+    .setDefaultMemberPermissions(adminPerms)
+    .addSubcommandGroup((g) =>
+      g
+        .setName("channels")
+        .setDescription("Canales donde Michi responde")
+        .addSubcommand((s) =>
+          s
+            .setName("add")
+            .setDescription("Permitir un canal")
+            .addChannelOption((o) =>
+              o
+                .setName("channel")
+                .setDescription("Canal de texto")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true)
+            )
+        )
+        .addSubcommand((s) =>
+          s
+            .setName("remove")
+            .setDescription("Quitar un canal de la lista")
+            .addChannelOption((o) =>
+              o
+                .setName("channel")
+                .setDescription("Canal de texto")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true)
+            )
+        )
+        .addSubcommand((s) => s.setName("list").setDescription("Ver canales permitidos"))
+    ),
 ].map((c) => c.toJSON());
 
 if (config.clientId) {

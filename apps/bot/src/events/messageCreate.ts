@@ -7,10 +7,8 @@ import {
   neutralizeMentions,
   escapeRegExp
 } from "../lib/utils.js";
-import {
-  loadLastRulesForContext,
-  buildProfileText
-} from "../services/training.service.js";
+import { buildSystemPrompt } from "@michito/ai";
+import { petRepo, trainingRuleRepo } from "@michito/db";
 import { llm } from "../services/ai.service.js";
 import { safeLogLine } from "../lib/logger.js";
 
@@ -41,30 +39,41 @@ export function registerMessageCreate(client: Client) {
 
       await message.channel.sendTyping().catch(() => undefined);
 
-      const rules = await loadLastRulesForContext({
-        limit: 10,
-        guildId: message.guildId,
-        targetUserId: message.author.id
-      });
-      const profileText = buildProfileText(rules);
+      const [pet, rules] = await Promise.all([
+        petRepo.ensurePet(message.guildId),
+        trainingRuleRepo.listActiveRules(message.guildId, 20),
+      ]);
+
+      if (pet.state === "DEAD") {
+        await message.reply({
+          content: "💀 *zzz…* (un admin puede revivir a Michi con `/revive`)",
+          allowedMentions: { parse: [], repliedUser: false },
+        });
+        return;
+      }
+
       const promptForModel = humanizeMessageContent(message, content);
 
       if (config.logMessages && config.logMessageContent) {
         console.log(`msg.to_model: ${safeLogLine(promptForModel, 400)}`);
       }
 
+      const guildName = message.guild?.name;
+      const systemMessage = buildSystemPrompt({
+        rules: rules.map((r) => ({ text: r.text })),
+        pet: {
+          name: pet.name,
+          state: pet.state,
+          mood: pet.mood,
+          hunger: pet.hunger,
+          energy: pet.energy,
+          health: pet.health,
+        },
+        ...(guildName !== undefined ? { guildName } : {}),
+      });
+
       const result = await llm.chat({
-        messages: [
-          ...(profileText
-            ? [
-                {
-                  role: "system" as const,
-                  content: profileText
-                }
-              ]
-            : []),
-          { role: "user", content: promptForModel }
-        ]
+        messages: [systemMessage, { role: "user", content: promptForModel }],
       });
 
       const reply = clampDiscordMessage(neutralizeMentions(result.content));

@@ -1,3 +1,5 @@
+export * from "./personalityPrompt.js";
+
 export type ChatRole = "system" | "user" | "assistant" | "tool";
 
 export type ChatMessage =

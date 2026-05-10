@@ -1,23 +1,15 @@
 import { NextResponse } from "next/server";
-import { readFile, appendFile } from "node:fs/promises";
-import { join } from "node:path";
-import { existsSync } from "node:fs";
-import { randomUUID } from "node:crypto";
+import { trainingRuleRepo, InvalidRuleError } from "@michito/db";
 
-const rulesPath = join(process.cwd(), "../../data/style_rules.jsonl");
+export const dynamic = "force-dynamic";
+
+const DEMO_GUILD_ID = process.env.WEB_DEMO_GUILD_ID ?? "demo";
+const DEMO_USER_ID = process.env.WEB_DEMO_USER_ID ?? "web-demo-user";
 
 export async function GET() {
   try {
-    if (!existsSync(rulesPath)) {
-      return NextResponse.json([]);
-    }
-    const content = await readFile(rulesPath, "utf-8");
-    const rules = content.split("\n")
-      .filter(Boolean)
-      .map(line => JSON.parse(line));
-    
-    // Devolvemos solo las últimas 20 para el demo web
-    return NextResponse.json(rules.slice(-20).reverse());
+    const rules = await trainingRuleRepo.listActiveRules(DEMO_GUILD_ID, 20);
+    return NextResponse.json(rules);
   } catch (error) {
     console.error("Error fetching rules:", error);
     return NextResponse.json({ error: "Failed to fetch rules" }, { status: 500 });
@@ -26,35 +18,19 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const ruleData = await req.json();
-    const { text, rawInput, title, ruleType, tags, priority, guildId, ownerUserId, targetType, targetUserId, language } = ruleData;
-    
-    if (!text || text.trim().length === 0) {
+    const body = (await req.json()) as { text?: unknown };
+    const rawText = typeof body.text === "string" ? body.text : "";
+
+    if (!rawText.trim()) {
       return NextResponse.json({ error: "Text is required" }, { status: 400 });
     }
 
-    const now = new Date().toISOString();
-    const newRule = {
-      id: ruleData.id || `rule_${randomUUID().split("-")[0]}`,
-      guildId: guildId || "518266435928195116",
-      ownerUserId: ownerUserId || "445753855230345219",
-      targetType: targetType || "web-user", // Identificamos que el target es un usuario de la web
-      targetUserId: targetUserId || "web-demo-user",
-      ruleType: ruleType || "behavior",
-      title: title || "Web Training Rule",
-      text: text.trim(),
-      rawInput: rawInput || text.trim(),
-      language: language || "es",
-      tags: [...(tags || ["training"]), "web"], // Añadimos siempre el tag 'web'
-      priority: priority || 80,
-      isActive: true,
-      createdAt: now,
-      updatedAt: now
-    };
-
-    await appendFile(rulesPath, JSON.stringify(newRule) + "\n", "utf-8");
-    return NextResponse.json(newRule);
+    const rule = await trainingRuleRepo.addRule(DEMO_GUILD_ID, DEMO_USER_ID, rawText);
+    return NextResponse.json(rule);
   } catch (error) {
+    if (error instanceof InvalidRuleError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error("Error creating rule:", error);
     return NextResponse.json({ error: "Failed to create rule" }, { status: 500 });
   }

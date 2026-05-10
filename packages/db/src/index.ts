@@ -18,12 +18,39 @@ type GlobalWithPrisma = typeof globalThis & {
 
 const globalForPrisma = globalThis as GlobalWithPrisma;
 
-export const prisma: PrismaClient =
-  globalForPrisma.__michitoPrisma ??
-  new PrismaClient({ adapter: new PrismaPg({ connectionString: getDatabaseUrl() }) });
+let _instance: PrismaClient | undefined;
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.__michitoPrisma = prisma;
+function ensurePrisma(): PrismaClient {
+  if (_instance) return _instance;
+  if (globalForPrisma.__michitoPrisma) {
+    _instance = globalForPrisma.__michitoPrisma;
+    return _instance;
+  }
+  _instance = new PrismaClient({
+    adapter: new PrismaPg({ connectionString: getDatabaseUrl() }),
+  });
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.__michitoPrisma = _instance;
+  }
+  return _instance;
 }
 
+/**
+ * Lazy Prisma proxy — defers construction (and DATABASE_URL lookup) until first use.
+ * Without this, importing `@michito/db` in environments that load env late (Next.js
+ * route modules, test runners, lint runners) throws at module-load time.
+ */
+export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const real = ensurePrisma();
+    const value = Reflect.get(real, prop, real);
+    return typeof value === "function" ? value.bind(real) : value;
+  },
+});
+
 export { PrismaClient };
+
+export * as petRepo from "./petRepo.js";
+export * as trainingRuleRepo from "./trainingRuleRepo.js";
+export { TICK_INTERVAL_MIN } from "./petRepo.js";
+export { InvalidRuleError, RULE_MAX_LENGTH, ACTIVE_RULES_LIMIT, validateRuleText } from "./trainingRuleRepo.js";
